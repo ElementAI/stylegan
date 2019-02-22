@@ -13,7 +13,7 @@ import os
 trial_id = os.environ.get("SHK_TRIAL_ID")
 result_dir = os.path.join('/results', trial_id)
 exist = False
-if not os.path.exists():
+if not os.path.exists(result_dir):
     os.makedirs(result_dir)
 else:
     exist = True
