@@ -7,12 +7,21 @@
 
 """Main entry point for training StyleGAN and ProGAN networks."""
 
+import os
 import copy
 import dnnlib
 from dnnlib import EasyDict
 
 import config
 from metrics import metric_base
+# SHURIKEN imports
+from shuriken.utils import get_hparams
+
+hparams = get_hparams()
+mult = hparams['mult']
+
+print("Trial_id: {}".format(os.environ.get("SHK_TRIAL_ID")))
+print("Retrieved: {}".format(hparams))
 
 #----------------------------------------------------------------------------
 # Official training configs for StyleGAN, targeted mainly for FFHQ.
@@ -47,11 +56,13 @@ if 1:
     #desc += '-2gpu'; submit_config.num_gpus = 2; sched.minibatch_base = 8; sched.minibatch_dict = {4: 256, 8: 256, 16: 128, 32: 64, 64: 32, 128: 16, 256: 8}
     #desc += '-4gpu'; submit_config.num_gpus = 4; sched.minibatch_base = 16; sched.minibatch_dict = {4: 512, 8: 256, 16: 128, 32: 64, 64: 32, 128: 16}
     desc += '-8gpu'; submit_config.num_gpus = 8; sched.minibatch_base = 32; sched.minibatch_dict = {4: 512, 8: 256, 16: 128, 32: 64, 64: 32}
+    sched.minibatch_dict = {k: int(v * mult)}
 
     # Default options.
     train.total_kimg = 25000
     sched.lod_initial_resolution = 8
     sched.G_lrate_dict = {128: 0.0015, 256: 0.002, 512: 0.003, 1024: 0.003}
+    sched.G_lrate_dict = {k: v * 2}
     sched.D_lrate_dict = EasyDict(sched.G_lrate_dict)
 
     # WGAN-GP loss for CelebA-HQ.
@@ -175,6 +186,8 @@ if 0:
 # Calls the function indicated by 'train' using the selected options.
 
 def main():
+    if config.exist:
+        train.resume_run_id = config.result_dir
     kwargs = EasyDict(train)
     kwargs.update(G_args=G, D_args=D, G_opt_args=G_opt, D_opt_args=D_opt, G_loss_args=G_loss, D_loss_args=D_loss)
     kwargs.update(dataset_args=dataset, sched_args=sched, grid_args=grid, metric_arg_list=metrics, tf_config=tf_config)
