@@ -1,0 +1,25 @@
+{
+    "title": "PGAN experiments 32g vanilla",
+    "worker_config": {
+        "memory": 64,
+        "cpu": 16,
+        "gpu": 8,
+        "volumes": [
+            "/mnt/scratch/ssense:/data",
+            "/mnt/home/thomas/stylegan_shk_results:/results"
+        ],
+        "options": {
+            "resources": {
+                "gpu-mem": 32
+            }
+        }
+    },
+    "parameters": {
+        "name": "GridSearch",
+        "config": {
+            "dimensions": {
+                "mult": [1]
+            }
+        }
+    }
+}

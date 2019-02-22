@@ -1,0 +1,10 @@
+FROM nvcr.io/nvidia/tensorflow:19.01-py3
+
+ARG PIP_EXTRA_INDEX_URL
+RUN mkdir /src
+WORKDIR /src
+COPY . /src
+
+RUN pip install scipy numpy eai-shuriken
+
+CMD ["python", "train.py"]
