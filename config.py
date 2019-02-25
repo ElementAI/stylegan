@@ -18,7 +18,7 @@ if not os.path.exists(result_dir):
 else:
     exist = True
 data_dir = '/data'
-cache_dir = 'cache'
-run_dir_ignore = ['/results', '/data', 'cache']
+cache_dir = '/cache'
+run_dir_ignore = ['/results', '/data', '/cache']
 
 #----------------------------------------------------------------------------
