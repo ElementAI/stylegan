@@ -21,7 +21,7 @@ import PIL.Image
 import dnnlib.tflib as tflib
 
 from training import dataset
-from python.collections import OrderedDict
+from collections import OrderedDict
 
 #----------------------------------------------------------------------------
 
