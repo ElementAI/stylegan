@@ -3,7 +3,6 @@ services:
   notebook:
     image: notebook
     volumes:
-      - .:/notebooks
       - /var/run/docker.sock:/var/run/docker.sock
       - /mnt/datasets/public/fashiongen:/data
       - /home/thomas/ssense-data-downloader-notebooks:/notebooks
