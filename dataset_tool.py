@@ -21,6 +21,7 @@ import PIL.Image
 import dnnlib.tflib as tflib
 
 from training import dataset
+from python.collections import OrderedDict
 
 #----------------------------------------------------------------------------
 
@@ -699,6 +700,31 @@ def create_from_hdf5(tfrecord_dir, hdf5_filename, shuffle):
 #----------------------------------------------------------------------------
 
 
+def create_from_hdf5_ssense(tfrecord_dir, hdf5_filename, shuffle):
+    print('Loading HDF5 archive from "%s"' % hdf5_filename)
+    dict_cat = OrderedDict()
+
+    def translate_cat(value):
+        if value not in dict_cat:
+            dict_cat[value] = len(dict_cat)
+        return dict_cat[value]
+
+    import h5py  # conda install h5py
+    with h5py.File(hdf5_filename, 'r') as hdf5_file:
+        hdf5_image = hdf5_file["input_image"]
+        hdf5_category = hdf5_file["input_category"]
+        with TFRecordExporter(tfrecord_dir, hdf5_image.shape[0]) as tfr:
+            order = tfr.choose_shuffled_order() if shuffle else np.arange(
+                hdf5_image.shape[0])
+            for idx in range(order.size):
+                tfr.add_image(hdf5_image[order[idx]])
+                category = translate_cat(hdf5_category[order[idx]])
+                tfr.add_labels(category)
+
+
+#----------------------------------------------------------------------------
+
+
 def execute_cmdline(argv):
     prog = argv[0]
     parser = argparse.ArgumentParser(
@@ -831,6 +857,18 @@ def execute_cmdline(argv):
     p = add_command(
         'create_from_hdf5', 'Create dataset from legacy HDF5 archive.',
         'create_from_hdf5 datasets/celebahq ~/downloads/celeba-hq-1024x1024.h5'
+    )
+    p.add_argument('tfrecord_dir', help='New dataset directory to be created')
+    p.add_argument('hdf5_filename', help='HDF5 archive containing the images')
+    p.add_argument(
+        '--shuffle',
+        help='Randomize image order (default: 1)',
+        type=int,
+        default=1)
+
+    p = add_command(
+        'create_from_hdf5_ssense', 'Create dataset from legacy HDF5 archive.',
+        'create_from_hdf5_ssense datasets/ssense ~/downloads/ssense_full_size_train.h5'
     )
     p.add_argument('tfrecord_dir', help='New dataset directory to be created')
     p.add_argument('hdf5_filename', help='HDF5 archive containing the images')
