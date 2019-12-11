@@ -11,6 +11,7 @@ import os
 import copy
 import dnnlib
 from dnnlib import EasyDict
+import numpy as np
 
 import config
 from metrics import metric_base
@@ -18,9 +19,15 @@ from metrics import metric_base
 from shuriken.utils import get_hparams
 
 hparams = get_hparams()
-mult = hparams['mult']
+mult_mb = hparams['mult_mb']
+mult_lr = hparams['mult_lr']
 fmaps = hparams['fmaps']
+lod_initial_resolution = hparams['lod_initial_resolution']
+lod_transition_kimg = hparams['lod_transition_kimg']
+lod_training_kimg = hparams['lod_training_kimg']
+total_kimg = np.max([hparams['total_kimg'], (lod_transition_kimg + lod_training_kimg) * 1.5])
 
+print(hparams)
 print("Trial_id: {}".format(os.environ.get("SHK_TRIAL_ID")))
 print("Retrieved: {}".format(hparams))
 
@@ -57,22 +64,24 @@ if 1:
     #desc += '-1gpu'; submit_config.num_gpus = 1; sched.minibatch_base = 4; sched.minibatch_dict = {4: 128, 8: 128, 16: 128, 32: 64, 64: 32, 128: 16, 256: 8, 512: 4}
     #desc += '-2gpu'; submit_config.num_gpus = 2; sched.minibatch_base = 8; sched.minibatch_dict = {4: 256, 8: 256, 16: 128, 32: 64, 64: 32, 128: 16, 256: 8}
     #desc += '-4gpu'; submit_config.num_gpus = 4; sched.minibatch_base = 16; sched.minibatch_dict = {4: 512, 8: 256, 16: 128, 32: 64, 64: 32, 128: 16}
-    desc += '-8gpu'; submit_config.num_gpus = 8; sched.minibatch_base = 32 * mult; sched.minibatch_dict = {4: 512, 8: 256, 16: 128, 32: 64, 64: 32}
-    sched.minibatch_dict = {k: int(v * mult) for k, v in sched.minibatch_dict.items()}
+    desc += '-8gpu'; submit_config.num_gpus = 8; sched.minibatch_base = 32 * mult_mb; sched.minibatch_dict = {4: 512, 8: 256, 16: 128, 32: 64, 64: 32}
+    sched.minibatch_dict = {k: int(v * mult_mb) for k, v in sched.minibatch_dict.items()}
 
     # Default options.
-    train.total_kimg = 600 * 2 * (mult + 1) * 10
-    sched.lod_initial_resolution = 2 ** (mult + 2)
-    sched.G_lrate_base = 0.001 * mult
-    sched.D_lrate_base = 0.001 * mult
-    sched.lod_transition_kimg = 600 * mult
-    sched.lod_training_kimg = 600 * mult
+    train.total_kimg = total_kimg
+    sched.lod_initial_resolution = lod_initial_resolution
+    sched.G_lrate_base = 0.001 * mult_lr
+    sched.D_lrate_base = 0.001 * mult_lr
+    sched.lod_transition_kimg = lod_transition_kimg
+    sched.lod_training_kimg = lod_training_kimg
     sched.G_lrate_dict = {128: 0.0015, 256: 0.002, 512: 0.003, 1024: 0.003}
-    sched.G_lrate_dict = {k: v * mult for k, v in sched.G_lrate_dict.items()}
+    sched.G_lrate_dict = {k: v * mult_lr for k, v in sched.G_lrate_dict.items()}
     sched.D_lrate_dict = EasyDict(sched.G_lrate_dict)
     G.fmap_max = fmaps
     D.fmap_max = fmaps
-    desc += '-{}-{}'.format(mult, fmaps)
+    hps = [total_kimg, lod_transition_kimg, lod_training_kimg, fmaps, lod_initial_resolution, mult_lr]
+    desc += '-'
+    desc += '-'.join(['{}'] * len(hps)).format(*hps)
 
     # WGAN-GP loss for CelebA-HQ.
     #desc += '-wgangp'; G_loss = EasyDict(func_name='training.loss.G_wgan'); D_loss = EasyDict(func_name='training.loss.D_wgan_gp'); sched.G_lrate_dict = {k: min(v, 0.002) for k, v in sched.G_lrate_dict.items()}; sched.D_lrate_dict = EasyDict(sched.G_lrate_dict)

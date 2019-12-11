@@ -165,7 +165,8 @@ def _create_run_dir_local(submit_config: SubmitConfig) -> str:
         os.makedirs(run_dir_root)
 
     submit_config.run_id = _get_next_run_id_local(run_dir_root)
-    submit_config.run_name = "{0:05d}-{1}".format(submit_config.run_id, submit_config.run_desc)
+    # submit_config.run_name = "{0:05d}-{1}".format(submit_config.run_id, submit_config.run_desc)
+    submit_config.run_name = "{}".format(submit_config.run_desc)
     run_dir = os.path.join(run_dir_root, submit_config.run_name)
 
     if os.path.exists(run_dir):

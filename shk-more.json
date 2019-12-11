@@ -1,11 +1,11 @@
 {
-    "title": "PGAN experiments 32g vanilla",
+    "title": "PGAN experiments 32g random",
     "worker_config": {
-        "memory": 96,
+        "memory": 128,
         "cpu": 16,
         "gpu": 8,
         "volumes": [
-            "/mnt/scratch/ssense:/data",
+            "/mnt/datasets/public/fashiongen:/data",
             "/mnt/home/thomas/stylegan_shk_results:/results",
             "/mnt/home/thomas/pretrained_networks:/networks",
             "/mnt/home/thomas/cache:/cache"
@@ -17,12 +17,18 @@
         }
     },
     "parameters": {
-        "name": "GridSearch",
+        "name": "RandomSearch",
         "config": {
             "dimensions": {
-                "mult": [1, 2],
-                "fmaps": [512, 1024]
-            }
+                "mult_mb": "randint(1, 9)",
+                "mult_lr": "norm(1, 0.001)",
+                "fmaps": "randint(128, 512)",
+                "lod_initial_resolution": [8],
+                "lod_transition_kimg": "randint(600, 1500)",
+                "lod_training_kimg": "randint(600, 1500)",
+                "total_kimg": [22000]
+            },
+            "nb_trials": 6
         }
     }
 }

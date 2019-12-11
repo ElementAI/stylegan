@@ -1,0 +1,34 @@
+{
+    "title": "PGAN experiments 16g random",
+    "worker_config": {
+        "memory": 96,
+        "cpu": 12,
+        "gpu": 8,
+        "volumes": [
+            "/mnt/scratch/ssense:/data",
+            "/mnt/home/thomas/stylegan_shk_results:/results",
+            "/mnt/home/thomas/pretrained_networks:/networks",
+            "/mnt/home/thomas/cache:/cache"
+        ],
+        "options": {
+            "resources": {
+                "gpu-mem": 16
+            }
+        }
+    },
+    "parameters": {
+        "name": "RandomSearch",
+        "config": {
+            "dimensions": {
+                "mult_mb": [1, 1.5, 2],
+                "mult_lr": [1],
+                "fmaps": "randint(256, 1024)",
+                "lod_initial_resolution": [4, 8],
+                "lod_transition_kimg": "randint(600, 1200)",
+                "lod_training_kimg": "randint(600, 1200)",
+                "total_kimg": [22000]
+            },
+            "nb_trials": 10
+        }
+    }
+}
