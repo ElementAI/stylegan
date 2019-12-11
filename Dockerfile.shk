@@ -16,10 +16,20 @@ RUN pip install \
     pymongo>=3.7.1 \
     requests>=2.19.1 \
     six>=1.11.0 \
-    tqdm>=4.24.0
+  tqdm>=4.24.0
+
+RUN apt-get install -y curl grep sed dpkg && \
+  TINI_VERSION=`curl https://github.com/krallin/tini/releases/latest | grep -o "/v.*\"" | sed 's:^..\(.*\).$:\1:'` && \
+  curl -L "https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini_${TINI_VERSION}.deb" > tini.deb && \
+  dpkg -i tini.deb && \
+  rm tini.deb && \
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/*
 
 RUN mkdir /src
 WORKDIR /src
 COPY . /src
+
+ENTRYPOINT [ "/usr/bin/tini", "--" ]
 
 CMD ["python", "train.py"]
