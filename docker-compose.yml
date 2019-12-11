@@ -6,6 +6,7 @@ services:
       - .:/notebooks
       - /var/run/docker.sock:/var/run/docker.sock
       - /mnt/datasets/public/fashiongen:/data
+      - /home/thomas/ssense-data-downloader-notebooks:/notebooks
     ports:
       - 9999:8888
     environment:
@@ -17,4 +18,5 @@ services:
       args:
         - PIP_EXTRA_INDEX_URL=https://a3cd083b-104c-4ab7-99b5-ec1a4f63f3d7:2707a904-9ce9-4f46-ab37-513f5cda7eb6@pypi.elmt.io/repo/eai-core
     command: ["jupyter", "notebook", "--allow-root"]
+    working_dir: /notebooks
 
