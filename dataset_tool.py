@@ -711,8 +711,12 @@ def create_from_hdf5_ssense(tfrecord_dir, hdf5_filename, shuffle):
 
     import h5py  # conda install h5py
     with h5py.File(hdf5_filename, 'r') as hdf5_file:
+        for key in hdf5_file.keys():
+            print(key)
         hdf5_image = hdf5_file["input_image"]
+        print(hdf5_image.shape)
         hdf5_category = hdf5_file["input_category"]
+        print(hdf5_category.shape)
         with TFRecordExporter(tfrecord_dir, hdf5_image.shape[0]) as tfr:
             order = tfr.choose_shuffled_order() if shuffle else np.arange(
                 hdf5_image.shape[0])
