@@ -22,6 +22,7 @@ import dnnlib.tflib as tflib
 
 from training import dataset
 from collections import OrderedDict
+from scipy.misc import imresize
 
 #----------------------------------------------------------------------------
 
@@ -722,6 +723,7 @@ def create_from_hdf5_ssense(tfrecord_dir, hdf5_filename, shuffle):
                 hdf5_image.shape[0])
             for idx in range(order.size):
                 shuffled_im = np.transpose(hdf5_image[order[idx]], (2, 0, 1))
+                shuffled_im = imresize(shuffled_im, (1024, 1024))
                 tfr.add_image(shuffled_im)
                 category = translate_cat(hdf5_category[order[idx]])
                 tfr.add_labels(category)
