@@ -721,11 +721,12 @@ def create_from_hdf5_ssense(tfrecord_dir, hdf5_filename, shuffle, nb_images=None
         print(hdf5_image.shape)
         hdf5_category = hdf5_file["input_category"]
         print(hdf5_category.shape)
+        print(nb_images)
         with TFRecordExporter(tfrecord_dir, nb_images) as tfr:
             order = tfr.choose_shuffled_order() if shuffle else np.arange(
                 nb_images)
-            order = order[nb_images]
-            categories = np.empty(shape=(len(hdf5_image), ))
+            categories = np.empty(shape=(nb_images, ))
+            print(order.size)
             for idx in range(order.size):
                 im = imresize(hdf5_image[order[idx]], (1024, 1024, 3))
                 shuffled_im = np.transpose(im, (2, 0, 1))
