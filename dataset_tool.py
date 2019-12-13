@@ -725,7 +725,7 @@ def create_from_hdf5_ssense(tfrecord_dir, hdf5_filename, shuffle, nb_images=None
         with TFRecordExporter(tfrecord_dir, nb_images) as tfr:
             order = tfr.choose_shuffled_order() if shuffle else np.arange(
                 nb_images)
-            categories = np.empty(shape=(nb_images, ))
+            categories = np.empty(shape=(nb_images, 1))
             print(order.size)
             for idx in range(order.size):
                 im = imresize(hdf5_image[order[idx]], (1024, 1024, 3))
