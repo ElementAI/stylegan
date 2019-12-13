@@ -18,6 +18,7 @@ import dnnlib.tflib as tflib
 import config
 from training import misc
 from training import dataset
+from shuriken import ShurikenMonitor
 
 #----------------------------------------------------------------------------
 # Standard metrics.
@@ -36,6 +37,7 @@ dummy = dnnlib.EasyDict(func_name='metrics.metric_base.DummyMetric', name='dummy
 class MetricBase:
     def __init__(self, name):
         self.name = name
+        self._shk_monitor = ShurikenMonitor()
         self._network_pkl = None
         self._dataset_args = None
         self._mirror_augment = None
@@ -88,6 +90,7 @@ class MetricBase:
         raise NotImplementedError # to be overridden by subclasses
 
     def _report_result(self, value, suffix='', fmt='%-10.4f'):
+        self._shk_monitor.send_info({self.name: value})
         self._results += [dnnlib.EasyDict(value=value, suffix=suffix, fmt=fmt)]
 
     def _get_cache_file_for_reals(self, extension='pkl', **kwargs):
