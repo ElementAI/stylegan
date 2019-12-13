@@ -701,7 +701,7 @@ def create_from_hdf5(tfrecord_dir, hdf5_filename, shuffle):
 #----------------------------------------------------------------------------
 
 
-def create_from_hdf5_ssense(tfrecord_dir, hdf5_filename, shuffle):
+def create_from_hdf5_ssense(tfrecord_dir, hdf5_filename, shuffle, nb_images=None):
     print('Loading HDF5 archive from "%s"' % hdf5_filename)
     dict_cat = OrderedDict()
 
@@ -716,12 +716,15 @@ def create_from_hdf5_ssense(tfrecord_dir, hdf5_filename, shuffle):
         for key in hdf5_file.keys():
             print(key)
         hdf5_image = hdf5_file["input_image"]
+        if nb_images is None:
+            nb_images = len(hdf5_image)
         print(hdf5_image.shape)
         hdf5_category = hdf5_file["input_category"]
         print(hdf5_category.shape)
         with TFRecordExporter(tfrecord_dir, hdf5_image.shape[0]) as tfr:
             order = tfr.choose_shuffled_order() if shuffle else np.arange(
                 hdf5_image.shape[0])
+            order = order[nb_images]
             categories = np.empty(shape=(len(hdf5_image), ))
             for idx in range(order.size):
                 im = imresize(hdf5_image[order[idx]], (1024, 1024, 3))
@@ -881,6 +884,7 @@ def execute_cmdline(argv):
     )
     p.add_argument('tfrecord_dir', help='New dataset directory to be created')
     p.add_argument('hdf5_filename', help='HDF5 archive containing the images')
+    p.add_argument('nb_images', type=int, default=None, help='Number of images to export')
     p.add_argument(
         '--shuffle',
         help='Randomize image order (default: 1)',
