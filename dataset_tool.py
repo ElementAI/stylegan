@@ -734,7 +734,7 @@ def create_from_hdf5_ssense(tfrecord_dir, hdf5_filename, shuffle, nb_images=None
                 tfr.add_image(shuffled_im)
                 categories[idx] = translate_cat(hdf5_category[order[idx]])
             one_hot = np.zeros((categories.size, categories.max()+1))
-            one_hot[np.arange(one_hot.size), one_hot] = 1
+            one_hot[np.arange(categories.size), categories] = 1
             tfr.add_labels(one_hot)
 
 
