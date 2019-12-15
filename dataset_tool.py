@@ -707,6 +707,7 @@ def create_from_hdf5_ssense(tfrecord_dir, hdf5_filename, shuffle, nb_images=None
 
     def translate_cat(value):
         value = value.astype(str).flatten()[0]
+        value = int(value)
         if value not in dict_cat:
             dict_cat[value] = len(dict_cat)
         return dict_cat[value]
