@@ -102,7 +102,9 @@ class TFRecordDataset:
         assert max_label_size == 'full' or max_label_size >= 0
         self._np_labels = np.zeros([1<<20, 0], dtype=np.float32)
         if self.label_file is not None and max_label_size != 0:
+            print("Loading labels")
             self._np_labels = np.load(self.label_file)
+            print(self._np_labels.shape)
             assert self._np_labels.ndim == 2
         if max_label_size != 'full' and self._np_labels.shape[1] > max_label_size:
             self._np_labels = self._np_labels[:, :max_label_size]
@@ -112,6 +114,8 @@ class TFRecordDataset:
         # Build TF expressions.
         with tf.name_scope('Dataset'), tf.device('/cpu:0'):
             self._tf_minibatch_in = tf.placeholder(tf.int64, name='minibatch_in', shape=[])
+            print("Labels")
+            print(self.np_labels)
             self._tf_labels_var = tflib.create_var_with_large_initial_value(self._np_labels, name='labels_var')
             self._tf_labels_dataset = tf.data.Dataset.from_tensor_slices(self._tf_labels_var)
             for tfr_file, tfr_shape, tfr_lod in zip(tfr_files, tfr_shapes, tfr_lods):
