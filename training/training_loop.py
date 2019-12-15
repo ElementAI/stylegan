@@ -335,7 +335,7 @@ def training_loop(
             tick_start_nimg = cur_nimg
             tick_time = ctx.get_time_since_last_update()
             total_time = ctx.get_time_since_start() + resume_time
-            shuriken_monitor.send_info({
+            shuriken_monitor.send_info(0, {
                 'cur_tick': cur_tick,
                 'tick_kimg': tick_kimg,
                 'tick_start_nimg': tick_start_nimg,
