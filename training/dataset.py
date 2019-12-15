@@ -105,6 +105,7 @@ class TFRecordDataset:
             print("Loading labels")
             self._np_labels = np.load(self.label_file)
             print(self._np_labels.shape)
+            print(self._np_labels.ndim)
             assert self._np_labels.ndim == 2
         if max_label_size != 'full' and self._np_labels.shape[1] > max_label_size:
             self._np_labels = self._np_labels[:, :max_label_size]

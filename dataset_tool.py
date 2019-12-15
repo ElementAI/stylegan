@@ -268,7 +268,7 @@ def extract(tfrecord_dir, output_dir):
     print('Loading dataset "%s"' % tfrecord_dir)
     tflib.init_tf({'gpu_options.allow_growth': True})
     dset = dataset.TFRecordDataset(
-        tfrecord_dir, max_label_size=0, repeat=False, shuffle_mb=0)
+        tfrecord_dir, max_label_size="full", repeat=False, shuffle_mb=0)
     tflib.init_uninitialized_vars()
 
     print('Extracting images to "%s"' % output_dir)
