@@ -280,7 +280,10 @@ def extract(tfrecord_dir, output_dir):
             print('%d\r' % idx, end='', flush=True)
         try:
             images, _labels = dset.get_minibatch_np(1)
+            print()
+            print("Labels")
             print(_labels)
+            print()
         except tf.errors.OutOfRangeError:
             break
         if images.shape[1] == 1:
@@ -726,16 +729,17 @@ def create_from_hdf5_ssense(tfrecord_dir, hdf5_filename, shuffle, nb_images=None
         with TFRecordExporter(tfrecord_dir, nb_images) as tfr:
             order = tfr.choose_shuffled_order() if shuffle else np.arange(
                 nb_images)
-            categories = np.empty(shape=(nb_images, ), dtype=np.int32)
+            labels = np.empty(shape=(nb_images, ), dtype=np.int32)
             print(order.size)
             for idx in range(order.size):
                 im = imresize(hdf5_image[order[idx]], (1024, 1024, 3))
                 shuffled_im = np.transpose(im, (2, 0, 1))
                 tfr.add_image(shuffled_im)
-                categories[idx] = translate_cat(hdf5_category[order[idx]])
-            one_hot = np.zeros((categories.size, categories.max()+1))
-            one_hot[np.arange(categories.size), categories] = 1
-            tfr.add_labels(one_hot)
+                labels[idx] = translate_cat(hdf5_category[order[idx]])
+            onehot = np.zeros((labels.size, np.max(labels) + 1), dtype=np.float32)
+            onehot[np.arange(labels.size), labels] = 1.0
+            print(onehot.shape)
+            tfr.add_labels(onehot)
 
 
 #----------------------------------------------------------------------------
