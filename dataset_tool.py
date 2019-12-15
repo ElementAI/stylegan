@@ -280,6 +280,7 @@ def extract(tfrecord_dir, output_dir):
             print('%d\r' % idx, end='', flush=True)
         try:
             images, _labels = dset.get_minibatch_np(1)
+            print(_labels)
         except tf.errors.OutOfRangeError:
             break
         if images.shape[1] == 1:
