@@ -161,7 +161,7 @@ def training_loop(
         resume_time=0.0
 ):  # Assumed wallclock time at the beginning. Affects reporting.
 
-    shuriken_monitor = ShurikenMonitor()
+    shuriken_monitor = ShurikenMonitor(verbose=0)
     # Initialize dnnlib and TensorFlow.
     ctx = dnnlib.RunContext(submit_config, train)
     tflib.init_tf(tf_config)
@@ -335,13 +335,14 @@ def training_loop(
             tick_start_nimg = cur_nimg
             tick_time = ctx.get_time_since_last_update()
             total_time = ctx.get_time_since_start() + resume_time
-            shuriken_monitor.send_info(0, {
+            info = {
                 'cur_tick': cur_tick,
                 'tick_kimg': tick_kimg,
                 'tick_start_nimg': tick_start_nimg,
                 'tick_time': tick_time,
                 'total_time': total_time
-            })
+            }
+            shuriken_monitor.send_info(0, info)
 
             # Report progress.
             print(

@@ -705,9 +705,11 @@ def create_from_hdf5(tfrecord_dir, hdf5_filename, shuffle):
 #----------------------------------------------------------------------------
 
 
-def create_from_hdf5_ssense(tfrecord_dir, hdf5_filename, shuffle, nb_images=None):
+def create_from_hdf5_ssense(tfrecord_dir, hdf5_filename, shuffle, nb_images=0):
     print('Loading HDF5 archive from "%s"' % hdf5_filename)
     dict_cat = OrderedDict()
+    if nb_images == 0:
+        nb_images = None
 
     def translate_cat(value):
         value = value.astype(str).flatten()[0]
@@ -892,7 +894,7 @@ def execute_cmdline(argv):
     )
     p.add_argument('tfrecord_dir', help='New dataset directory to be created')
     p.add_argument('hdf5_filename', help='HDF5 archive containing the images')
-    p.add_argument('nb_images', type=int, default=None, help='Number of images to export')
+    p.add_argument('nb_images', type=int, default=0, help='Number of images to export')
     p.add_argument(
         '--shuffle',
         help='Randomize image order (default: 1)',

@@ -90,7 +90,10 @@ class MetricBase:
         raise NotImplementedError # to be overridden by subclasses
 
     def _report_result(self, value, suffix='', fmt='%-10.4f'):
-        self._shk_monitor.send_info({self.name: value})
+        value = np.float32(value)
+        if np.isnan(value):
+            value = 0
+        self._shk_monitor.send_info(0, {self.name: value})
         self._results += [dnnlib.EasyDict(value=value, suffix=suffix, fmt=fmt)]
 
     def _get_cache_file_for_reals(self, extension='pkl', **kwargs):
