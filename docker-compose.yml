@@ -42,6 +42,6 @@ services:
       args:
         - PIP_EXTRA_INDEX_URL=https://a3cd083b-104c-4ab7-99b5-ec1a4f63f3d7:2707a904-9ce9-4f46-ab37-513f5cda7eb6@pypi.elmt.io/repo/eai-core
     command: >
-      bash -c "python dataset_tool.py create_from_hdf5_ssense /data/tf_record_full_label /data/latest_indexes/ssense_full_size_train.h5"
+      bash -c "python dataset_tool.py create_from_hdf5_ssense /data/tf_record_full_label /data/latest_indexes/ssense_full_size_train.h5 0"
 
     working_dir: /src
